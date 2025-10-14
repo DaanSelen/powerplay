@@ -46,14 +46,14 @@ class confread():
                 print(f"Section: {kw} - absent, exiting...")
                 return False
 
-            print(f"Section: {kw} - exists and is filled.")
-
+            # Success round.
         return True
 
     def build_connstr(self) -> str:
         cnf = self.config[default_config_section]
         
-        base = f"postgresql://{cnf['username']}:{cnf['password']}@{cnf['hostname']}:{cnf['port']}/{cnf['database']}"
+        base_exp = f"postgresql://{cnf['username']}:{cnf['password']}@{cnf['hostname']}:{cnf['port']}/{cnf['database']}"
 
-        return base
+        return base_exp
+
 
