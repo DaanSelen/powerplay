@@ -1,0 +1,11 @@
+services:
+  postgresql:
+    image: postgres:18
+    container_name: carrier
+    ports:
+      - 5432:5432/tcp
+    environment:
+      POSTGRES_USER: provider
+      POSTGRES_PASSWORD: changeme1!
+      POSTGRES_DB: provider
+    restart: always
