@@ -19,7 +19,7 @@ class confread():
             self.config.read(default_config_path)
         else:
             print(f"The config file does not exist. Please provide a compliant configuration file at: {default_config_path}")
-            return
+            exit(1)
 
     def verify_integrity(self) -> bool:
         '''

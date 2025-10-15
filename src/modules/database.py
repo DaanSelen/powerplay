@@ -65,7 +65,7 @@ class dataman():
         with self.dbc.cursor() as cur:
             cur.execute(query, (schema, table_name))
             columns = cur.fetchall()
-        return columns
+        print(columns)
 
     def get_all_rows(self, table_name):
         query = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table_name))
@@ -76,6 +76,26 @@ class dataman():
 
         for ind_raw_row in raw_rows:
             print(ind_raw_row)
+
+    def get_doc_data(self, table_name) -> list[dict]:
+        query = sql.SQL("SELECT doc FROM {}").format(sql.Identifier(table_name))
+
+        with self.dbc.cursor() as cur:
+            cur.execute(query)
+            raw_rows = cur.fetchall()
+        
+        node_list = []
+        for ind_raw_row in raw_rows:
+            tmp_dict = {}
+            doc_dict = ind_raw_row[0]
+            
+            if doc_dict.get('type') == 'node':
+                tmp_dict['nodeid'] = doc_dict.get('_id')
+                tmp_dict['nodename'] = doc_dict.get('name')
+
+                node_list.append(tmp_dict)
+
+        return node_list
 
     def get_dist_nodeids(self, table_name):
         query = sql.SQL("SELECT DISTINCT nodeid FROM {}").format(sql.Identifier(table_name))
@@ -95,9 +115,7 @@ class dataman():
         return cleaned_rows
 
     def get_pwr_events(self, table_name, nodeid) -> list[dt.datetime, dict]:
-        query = f"""
-            SELECT time, doc FROM {table_name} WHERE nodeid = %s
-        """
+        query = sql.SQL("SELECT time, doc FROM {} WHERE nodeid = %s").format(sql.Identifier(table_name))
         
         with self.dbc.cursor() as cur:
             cur.execute(query, (nodeid,))

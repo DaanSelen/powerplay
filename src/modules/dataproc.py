@@ -16,6 +16,10 @@ class process():
         ])
 
         return df
+    
+    def insert_name(df, name):
+        df['nodename'] = name
+        return df
 
     def stitch_plot(node_dfs: dict):
         """
@@ -23,7 +27,7 @@ class process():
         Returns a single stitched plot with one row per node
         """
         num_nodes = len(node_dfs)
-        fig, axes = plt.subplots(num_nodes, 1, figsize=(15, 2 * num_nodes), sharex=False)
+        _, axes = plt.subplots(num_nodes, 1, figsize=(15, 1.5 * num_nodes), sharex=False)
 
         if num_nodes == 1:
             axes = [axes]  # Ensure axes is iterable
@@ -32,7 +36,7 @@ class process():
         global_end = max(all_end_dates)
         global_start = global_end - pd.Timedelta(days=30)
 
-        for ax, (nodeid, df) in zip(axes, node_dfs.items()):
+        for ax, (_, df) in zip(axes, node_dfs.items()):
             df['timestamp'] = pd.to_datetime(df['timestamp'])
             df = df.sort_values('timestamp')
 
@@ -43,7 +47,7 @@ class process():
             last_state = None
             last_time = None
 
-            for idx, row in df_30.iterrows():
+            for _, row in df_30.iterrows():
                 if last_state is None:
                     last_state = row['power']
                     last_time = row['timestamp']
@@ -59,11 +63,13 @@ class process():
                 color = 'green' if state == 1 else 'red'
                 ax.barh(0, end - start, left=start, height=0.4, color=color)
 
+            node_name_from_df = df['nodename'].iloc[0]  # first row's nodename
+
             # Format X-axis
             ax.xaxis_date()
             ax.xaxis.set_major_formatter(mdates.DateFormatter('%d %b'))
             ax.set_yticks([])
-            ax.set_title(f"{nodeid} (Green=ON, Red=OFF)")
+            ax.set_title(f"{node_name_from_df} (Green=ON, Red=OFF)")
             ax.xaxis.set_minor_locator(mdates.DayLocator())
             ax.grid(axis='x', which='minor', color='lightgray', linestyle='--', linewidth=0.5)
 
@@ -72,4 +78,6 @@ class process():
             plt.setp(ax.get_xticklabels(), rotation=45, ha='right')  # Rotate dates for readability
 
         plt.tight_layout()
+        plt.savefig('report.png')
         plt.show()
+        plt.close()
