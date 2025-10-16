@@ -3,3 +3,4 @@
 *.sql
 *venv*
 *.png
+!assets/*.png

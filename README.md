@@ -14,3 +14,7 @@ git clone https://github.com/daanselen/powerplay
 cd powerplay
 bash ./run.sh
 ```
+
+## Example:
+
+![Blurred Report](./assets/blur_report.png)
